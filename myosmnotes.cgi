@@ -10,6 +10,7 @@ use feature 'say';
 use Encode;
 use CGI;
 use CGI::Carp;
+use URI::Escape;
 use DB_File;
 
 $ENV{'PATH'} = '/usr/bin:/bin';
@@ -25,19 +26,25 @@ my $key = encode_utf8($search);
 tie my %USER, "DB_File", "$DB_USERS_FILE", O_RDONLY;
 tie my %NOTE, "DB_File", "$DB_NOTES_FILE", O_RDONLY;
 
-say '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>My OpenStreetMap Notes - results</title></head><body>';
-say "Searching for OSM Notes for user: <strong>$search</strong><p>";
+say '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>My OpenStreetMap Notes - results</title><style>';
+say 'table { background:#ddd; border-collapse: collapse; box-shadow: 0.3rem 0.3rem 0.5rem rgba(0, 0, 0, 0.3); border: 1px solid #777; }';
+say 'th { color: #FFF; background-color: rgba(0, 0, 0, 0.3); text-shadow: 1px 1px 1px #111;';
+say '</style></head><body>';
+
+# FIXME - database update timestamp
+
+say 'Searching for OSM Notes for user: <A HREF="http://www.openstreetmap.org/user/' . uri_escape($key) . '/notes">' . $key . '</A><p>';
 
 my $notes = $USER{$key};
 if (defined($notes)) {
-    say "FOUND $notes<p>";
-    foreach my $n (split / /, $notes) {
-      say "NOTE{$n}=$NOTE{$n}<br>";
+    say "<table><thead><tr><th>Note ID</th><th>first description</th></tr></thead><tbody>";
+    foreach my $n (split ' ', $notes) {
+      say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . $n . '">' . $n . '</A></td><td>' . $NOTE{$n} . '</td></tr>';
     }
 } else {
-    say "nothing found for >$key<";
+    say "No open OSM notes found for user >$key<";
 }
 
-say '</body></html>';
+say '</tbody></table></body></html>';
 
 exit 0;
