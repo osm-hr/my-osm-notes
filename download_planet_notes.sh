@@ -15,7 +15,7 @@ echo "$URL_BASE/$PLANET_NOTES_FILE: `ls -l $PLANET_NOTES_FILE`"
 if [ ! -e "OK.$PLANET_NOTES_FILE" -o "$PLANET_NOTES_FILE" -nt "OK.$PLANET_NOTES_FILE" ]
 then
 	cp -a "$PLANET_NOTES_FILE" "OK.$PLANET_NOTES_FILE"
-	exec time ./myosmnotes_parser.pl
+	exec ./myosmnotes_parser.pl
 	exit 99
 else
 	echo "No updates."

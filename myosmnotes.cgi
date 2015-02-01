@@ -23,6 +23,7 @@ print $q->header (-charset=>'utf-8');
 my $search = $q->param('s');
 my $key = encode_utf8($search);
 
+my $mtime = (stat($DB_USERS_FILE))[9];
 tie my %USER, "DB_File", "$DB_USERS_FILE", O_RDONLY;
 tie my %NOTE, "DB_File", "$DB_NOTES_FILE", O_RDONLY;
 
@@ -30,8 +31,6 @@ say '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>My OpenStreetMap No
 say 'table { background:#ddd; border-collapse: collapse; box-shadow: 0.3rem 0.3rem 0.5rem rgba(0, 0, 0, 0.3); border: 1px solid #777; }';
 say 'th { color: #FFF; background-color: rgba(0, 0, 0, 0.3); text-shadow: 1px 1px 1px #111;';
 say '</style></head><body>';
-
-# FIXME - database update timestamp
 
 say 'Searching for OSM Notes for user: <A HREF="http://www.openstreetmap.org/user/' . uri_escape($key) . '/notes">' . $key . '</A><p>';
 
@@ -45,6 +44,9 @@ if (defined($notes)) {
     say "No open OSM notes found for user >$key<";
 }
 
-say '</tbody></table></body></html>';
+
+say '</tbody></table>';
+say '<p>Database was last updated: ' . localtime($mtime);
+say '</body></html>';
 
 exit 0;
