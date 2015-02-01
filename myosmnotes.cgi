@@ -35,12 +35,8 @@ say '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>My OpenStreetMap No
 say 'table { background:#ddd; border-collapse: separate; box-shadow: 0.3rem 0.3rem 0.5rem rgba(0, 0, 0, 0.3); border: 1px solid #777; border-spacing: 8px;}';
 say 'th { color: #FFF; background-color: rgba(0, 0, 0, 0.3); text-shadow: 1px 1px 1px #111;';
 say '</style></head><body>';
-say '<font color=red>DEVEL VERSION FIXME DELME</font><p>';
 
 
-
-
-# FIXME TODO - add support for multiple user searching, and mention in docs (add html support?) - also show here all users, and dedupe notes when using multiple users!
 my @all_notes = ();
 say 'Searching for OSM Notes for users: ';
 foreach my $user (@users) {
