@@ -9,7 +9,6 @@ use warnings;
 use autodie;
 use feature 'say';
 
-use Encode;
 use DB_File;
 use XML::SAX;
 
@@ -18,6 +17,9 @@ my $OSN_FILE = 'OK.planet-notes-latest.osn.bz2';
 my $DB_NOTES_FILE = 'notes-txt.db';		# contains note_id(s) and first comment (Note description)
 my $DB_USERS_FILE = 'users.db';			# contains user_id(s) and list of all notes he took part in
 my $count = 0;
+
+my $start_time = time;
+print 'parsing... ';
 
 #open (my $xml_file, '-|:encoding(utf8)', "bzcat $OSN_FILE");
 open (my $xml_file, '-|', "bzcat $OSN_FILE");
@@ -38,6 +40,8 @@ tie my %NOTE, "DB_File", "$DB_NOTES_FILE";
 
 $parser->parse_file($xml_file);
 
+say 'completed in ' . (time - $start_time) . ' seconds.';
+
 exit 0;
 
 
@@ -49,6 +53,8 @@ exit 0;
 
 package SAX_OSM_Notes;
 use base qw(XML::SAX::Base);
+use Encode;
+
 
 use strict;
 use warnings;
@@ -100,9 +106,9 @@ sub end_element
 
    if ($tag->{LocalName} eq 'note') {
      if ($this->{'last_action'} eq 'opened') {	# we're only interested in (re-)opened notes!
-        #if ($count++ > 999) { say "exiting on $count for DEBUG, FIXME"; exit 0;}
-        #say "[$count] end_note (non-closed), last note_id=" . $this->{'note_ID'} . ", first_text=" . $this->{'first_text'};
-        print '.';
+        #if ($count++ > 999) { say "exiting on $count for DEBUG, FIXME"; exit 0;} ; print "[$count] ";
+        #say "end_note (non-closed), last note_id=" . $this->{'note_ID'} . ", first_text=" . $this->{'first_text'};
+        #print '.';
         $NOTE{$this->{'note_ID'}} = encode_utf8($this->{'first_text'});	# save it to database
         $this->{'first_text'} = 1;	# reduce memory usage (no need to keep full text in memory)
         
