@@ -13,4 +13,5 @@ md5sum --status -c $PLANET_NOTES_MD5 || exit 3
 
 echo "$URL_BASE/$PLANET_NOTES_FILE: `ls -l $PLANET_NOTES_FILE`"
 cp -a "$PLANET_NOTES_FILE" "OK.$PLANET_NOTES_FILE"
-exit 0
+exec time ./myosmnotes_parser.pl
+exit 99

@@ -108,7 +108,7 @@ sub end_element
         
         foreach my $u (keys %{$this->{'users'}}) { 
             my $key=Encode::encode_utf8($u);
-            say "\tuser=$u -- note is opened, remember it!";
+            #say "\tuser=$u -- note is opened, remember it!";
             if (defined($USER{$key})) {
                $USER{$key} .= ' ' . $this->{'note_ID'};
             } else {
