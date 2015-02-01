@@ -36,6 +36,7 @@ say 'th { color: #FFF; background-color: rgba(0, 0, 0, 0.3); text-shadow: 1px 1p
 say '</style></head><body>';
 
 # FIXME TODO - add support for multiple user searching, and mention in docs (add html support?) - also show here all users, and dedupe notes when using multiple users!
+# FIXME TODO - da pise vrijeme zadnje izmjene Note-a
 say 'Searching for OSM Notes for user: <A HREF="http://www.openstreetmap.org/user/' . uri_escape($key) . '/notes">' . $key . '</A><p>';
 
 my $notes = $USER{$key};
