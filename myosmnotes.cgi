@@ -14,6 +14,7 @@ use URI::Escape;
 use DB_File;
 
 $ENV{'PATH'} = '/usr/bin:/bin';
+my $OSN_FILE = 'OK.planet-notes-latest.osn.bz2';
 my $DB_NOTES_FILE = 'notes-txt.db';		# Note: same as in myosmnotes_parser.pl
 my $DB_USERS_FILE = 'users.db';			# Note: same as in myosmnotes_parser.pl
 
@@ -23,7 +24,9 @@ print $q->header (-charset=>'utf-8');
 my $search = $q->param('s');
 my $key = encode_utf8($search);
 
-my $mtime = (stat($DB_USERS_FILE))[9];
+my $db_mtime = (stat($DB_USERS_FILE))[9];
+my $dump_mtime = (stat($OSN_FILE))[9];
+
 tie my %USER, "DB_File", "$DB_USERS_FILE", O_RDONLY;
 tie my %NOTE, "DB_File", "$DB_NOTES_FILE", O_RDONLY;
 
@@ -40,13 +43,14 @@ if (defined($notes)) {
     foreach my $n (split ' ', $notes) {
       say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . $n . '">' . $n . '</A></td><td>' . $NOTE{$n} . '</td></tr>';
     }
+    say '</tbody></table>';
 } else {
     say "No open OSM notes found for user >$key<";
 }
 
 
-say '</tbody></table>';
-say '<p>Database was last updated: ' . localtime($mtime);
+say '<p>Database was last updated: ' . localtime($db_mtime);
+say '<br>Last OSM Notes planet dump timestamp was: ' . localtime($dump_mtime);
 say '</body></html>';
 
 exit 0;
