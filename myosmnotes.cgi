@@ -12,6 +12,7 @@ use CGI;
 use CGI::Carp;
 use URI::Escape;
 use DB_File;
+use List::MoreUtils qw(uniq);
 
 $ENV{'PATH'} = '/usr/bin:/bin';
 my $OSN_FILE = 'OK.planet-notes-latest.osn.bz2';
@@ -40,20 +41,25 @@ say '<font color=red>DEVEL VERSION FIXME DELME</font><p>';
 
 
 # FIXME TODO - add support for multiple user searching, and mention in docs (add html support?) - also show here all users, and dedupe notes when using multiple users!
+my @all_notes = ();
 say 'Searching for OSM Notes for users: ';
 foreach my $user (@users) {
     my $key = encode_utf8($user);
-    my @notes = split ' ', $USER{$key};
-    say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape($key) . '/notes">' . $key . '</A>(' . (length @notes) . ') ';
+    my @user_notes = split ' ', $USER{$key};
+    push @all_notes, @user_notes;
+    say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape($key) . '/notes">' . $key . '</A>(' . (scalar @user_notes) . ') ';
+}
 
+if (@all_notes) {
     say "<p><table><thead><tr><th>Note ID</th><th>last activity</th><th>first description</th></tr></thead><tbody>";
-    foreach my $n (@notes) {
+    foreach my $n (uniq sort {$a <=> $b} @all_notes) {
       my ($note_time, $note_text) = split / /, $NOTE{$n}, 2;
       $note_time =~ s/T/ /; $note_time =~ s/Z/ GMT/;
       say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . $n . '">' . $n . '</A></td><td>' . $note_time . '</td><td>' . $note_text . '</td></tr>';
     }
     say '</tbody></table>';
-
+} else {
+    say '<br>No open notes found.';
 }
 
 say '<p>Database was last updated: ' . localtime($db_mtime);
