@@ -71,6 +71,7 @@ sub start_element
      #say "\n/mn/ start note_id=$note_id";
      $this->{'note_ID'} = $note_id;
      $this->{'first_text'} = undef;
+     $this->{'last_date'} = undef;
      %{$this->{'users'}} = ();
      #Dumper($tag->{Attributes})
    }
@@ -84,6 +85,8 @@ sub start_element
        #say "  comment by user_id=$user_id, note_id=" . $this->{'note_ID'};
        $this->{'users'}{$user_id} = 1;
      }
+     $this->{'last_date'} = $tag->{'Attributes'}{'{}timestamp'}{'Value'};
+     #say '   comment timestamp: '  . $this->{'last_date'};
    }
    
    # call the super class to properly handle the event
@@ -107,9 +110,9 @@ sub end_element
    if ($tag->{LocalName} eq 'note') {
      if ($this->{'last_action'} eq 'opened') {	# we're only interested in (re-)opened notes!
         #if ($count++ > 999) { say "exiting on $count for DEBUG, FIXME"; exit 0;} ; print "[$count] ";
-        #say "end_note (non-closed), last note_id=" . $this->{'note_ID'} . ", first_text=" . $this->{'first_text'};
+        #say "end_note (non-closed), last note_id=" . $this->{'note_ID'} . ", first_text=" . $this->{'first_text'} . ", last_date=" . $this->{'last_date'};
         #print '.';
-        $NOTE{$this->{'note_ID'}} = encode_utf8($this->{'first_text'});	# save it to database
+        $NOTE{$this->{'note_ID'}} = $this->{'last_date'} . ' ' . encode_utf8($this->{'first_text'});	# save it to database
         $this->{'first_text'} = 1;	# reduce memory usage (no need to keep full text in memory)
         
         foreach my $u (keys %{$this->{'users'}}) { 
@@ -125,11 +128,12 @@ sub end_element
    }
    
   if ($tag->{'LocalName'} eq 'comment') {
-    # say "end_comment[" . $this->{'note_ID'} .  "], full text=". $this->{'text'};	# full text of this comment
+    #say 'end_comment[' . $this->{'note_ID'} .  '], full text=' . $this->{'text'};	# full text of this comment
     if (!defined($this->{'first_text'})) {	# only the full text of the FIRST comment (opening of bug)
         $this->{'first_text'} = $this->{'text'};
         $this->{'first_text'} =~ s/\s+/ /g;
     }
+    #say "comment tag=" . Dumper($tag);
   }
       
    return $this->SUPER::end_element($tag)

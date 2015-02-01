@@ -31,19 +31,20 @@ tie my %USER, "DB_File", "$DB_USERS_FILE", O_RDONLY;
 tie my %NOTE, "DB_File", "$DB_NOTES_FILE", O_RDONLY;
 
 say '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>My OpenStreetMap Notes - results</title><style>';
-say 'table { background:#ddd; border-collapse: collapse; box-shadow: 0.3rem 0.3rem 0.5rem rgba(0, 0, 0, 0.3); border: 1px solid #777; }';
+say 'table { background:#ddd; border-collapse: separate; box-shadow: 0.3rem 0.3rem 0.5rem rgba(0, 0, 0, 0.3); border: 1px solid #777; border-spacing: 8px;}';
 say 'th { color: #FFF; background-color: rgba(0, 0, 0, 0.3); text-shadow: 1px 1px 1px #111;';
 say '</style></head><body>';
 
 # FIXME TODO - add support for multiple user searching, and mention in docs (add html support?) - also show here all users, and dedupe notes when using multiple users!
-# FIXME TODO - da pise vrijeme zadnje izmjene Note-a
 say 'Searching for OSM Notes for user: <A HREF="http://www.openstreetmap.org/user/' . uri_escape($key) . '/notes">' . $key . '</A><p>';
 
 my $notes = $USER{$key};
 if (defined($notes)) {
-    say "<table><thead><tr><th>Note ID</th><th>first description</th></tr></thead><tbody>";
+    say "<table><thead><tr><th>Note ID</th><th>last activity</th><th>first description</th></tr></thead><tbody>";
     foreach my $n (split ' ', $notes) {
-      say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . $n . '">' . $n . '</A></td><td>' . $NOTE{$n} . '</td></tr>';
+      my ($note_time, $note_text) = split / /, $NOTE{$n}, 2;
+      $note_time =~ s/T/ /; $note_time =~ s/Z/ GMT/;
+      say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . $n . '">' . $n . '</A></td><td>' . $note_time . '</td><td>' . $note_text . '</td></tr>';
     }
     say '</tbody></table>';
 } else {
