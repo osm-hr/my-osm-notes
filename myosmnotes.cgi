@@ -5,3 +5,12 @@
 use strict;
 use warnings;
 use autodie;
+use CGI;
+
+my $q=CGI->new;
+print $q->header;
+my $search = $q->param('s');
+
+print "FIXME Searching for: $search";
+
+exit 0;
