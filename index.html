@@ -3,7 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <title>My OpenStreetMap Notes</title>
+<script language="Javascript">
+var counter = 1;
+function addUser() {
+          var newUser = document.createElement('div');
+          newUser.innerHTML = "Username" + ++counter + ": <input name=s type=text><br>";
+          document.getElementById('moreUsers').appendChild(newUser);
+}
+</script>
 </head>
+
 <body>
 <h1>My OpenStreetMap Notes</h1>
 This will use last <A HREF="http://planet.osm.org/notes/">OpenStreetMap notes planet dump</A> 
@@ -13,8 +22,12 @@ Once <A HREF="https://github.com/openstreetmap/openstreetmap-website/issues/832"
 
 <p>
 <form action="myosmnotes.cgi" method=GET>
-Username: <input name=s type=text><br>
+Username1: <input name=s type=text><br>
+<div id="moreUsers">
+</div>
+
 <input type="submit" value="Search">
+<input type="button" value="Add another username" onClick="addUser()">
 </form>
 
 <p>Source code <A HREF="https://github.com/osm-hr/my-osm-notes">is released</A> 
