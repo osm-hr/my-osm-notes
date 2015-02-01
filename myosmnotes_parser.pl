@@ -16,6 +16,7 @@ $ENV{'PATH'} = '/usr/bin:/bin';
 my $OSN_FILE = 'OK.planet-notes-latest.osn.bz2';
 my $DB_NOTES_FILE = 'notes-txt.db';		# contains note_id(s) and first comment (Note description)
 my $DB_USERS_FILE = 'users.db';			# contains user_id(s) and list of all notes he took part in
+my $count = 0;
 
 #open (my $xml_file, '-|:encoding(utf8)', "bzcat $OSN_FILE");
 open (my $xml_file, '-|', "bzcat $OSN_FILE");
@@ -99,14 +100,15 @@ sub end_element
 
    if ($tag->{LocalName} eq 'note') {
      if ($this->{'last_action'} eq 'opened') {	# we're only interested in (re-)opened notes!
-        #say "/mn/ end_note (non-closed), last note_id=" . $this->{'note_ID'} . ", first_text=" . $this->{'first_text'};
+        #if ($count++ > 999) { say "exiting on $count for DEBUG, FIXME"; exit 0;}
+        #say "[$count] end_note (non-closed), last note_id=" . $this->{'note_ID'} . ", first_text=" . $this->{'first_text'};
         print '.';
         $NOTE{$this->{'note_ID'}} = Encode::encode_utf8($this->{'first_text'});	# save it to database
         $this->{'first_text'} = 1;	# reduce memory usage (no need to keep full text in memory)
         
         foreach my $u (keys %{$this->{'users'}}) { 
             my $key=Encode::encode_utf8($u);
-            #say "\tuser=$u -- note is opened, remember it!";
+            say "\tuser=$u -- note is opened, remember it!";
             if (defined($USER{$key})) {
                $USER{$key} .= ' ' . $this->{'note_ID'};
             } else {
@@ -119,7 +121,7 @@ sub end_element
   if ($tag->{'LocalName'} eq 'comment') {
     # say "end_comment[" . $this->{'note_ID'} .  "], full text=". $this->{'text'};	# full text of this comment
     if (!defined($this->{'first_text'})) {	# only the full text of the FIRST comment (opening of bug)
-        $this->{'first_text'} = $this->{'text'} || '';
+        $this->{'first_text'} = $this->{'text'};
         $this->{'first_text'} =~ s/\s+/ /g;
     }
   }
