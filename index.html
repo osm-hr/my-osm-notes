@@ -1,11 +1,17 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title>My OpenStreetMap Notes</title>
 </head>
 <body>
 <h1>My OpenStreetMap Notes</h1>
-<form action="myosmnotes.cgi" method=POST>
-Username (regexp): <input name=s type=text><br>
+This will use last <A HREF="http://planet.osm.org/notes/">OpenStreetMap notes planet dump</A> 
+(which should update daily) to search for all unresolved <A HREF="http://wiki.openstreetmap.org/wiki/Notes">OSM Notes</A> for specified user.
+Once <A HREF="https://github.com/openstreetmap/openstreetmap-website/issues/832">openstreetmap-website issue 832</A> is resolved, this will become obsolete (currently, if you use the Notes a lot, you'll have to wade through dozens/hundreds of pages of your closed bugs so you can find the ones that are still open).
+
+<p>
+<form action="myosmnotes.cgi" method=GET>
+Username: <input name=s type=text><br>
 <input type="submit" value="Search">
 </form>
 </body>

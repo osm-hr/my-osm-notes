@@ -9,6 +9,7 @@ use warnings;
 use autodie;
 use feature 'say';
 
+use Encode;
 use DB_File;
 use XML::SAX;
 
@@ -36,7 +37,6 @@ tie my %NOTE, "DB_File", "$DB_NOTES_FILE";
 
 
 $parser->parse_file($xml_file);
-
 
 exit 0;
 
@@ -103,11 +103,11 @@ sub end_element
         #if ($count++ > 999) { say "exiting on $count for DEBUG, FIXME"; exit 0;}
         #say "[$count] end_note (non-closed), last note_id=" . $this->{'note_ID'} . ", first_text=" . $this->{'first_text'};
         print '.';
-        $NOTE{$this->{'note_ID'}} = Encode::encode_utf8($this->{'first_text'});	# save it to database
+        $NOTE{$this->{'note_ID'}} = encode_utf8($this->{'first_text'});	# save it to database
         $this->{'first_text'} = 1;	# reduce memory usage (no need to keep full text in memory)
         
         foreach my $u (keys %{$this->{'users'}}) { 
-            my $key=Encode::encode_utf8($u);
+            my $key = encode_utf8($u);
             #say "\tuser=$u -- note is opened, remember it!";
             if (defined($USER{$key})) {
                $USER{$key} .= ' ' . $this->{'note_ID'};
