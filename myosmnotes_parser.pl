@@ -61,7 +61,7 @@ sub start_element
    
    if ($tag->{'LocalName'} eq 'note') {
      my $note_id = $tag->{'Attributes'}{'{}id'}{'Value'};
-     say "\n/mn/ start note_id=$note_id";
+     #say "\n/mn/ start note_id=$note_id";
      $this->{'note_ID'} = $note_id;
      $this->{'first_text'} = undef;
      %{$this->{'users'}} = ();
@@ -74,14 +74,11 @@ sub start_element
      $this->{'last_action'} = $1 if $action =~ /^(?:re)?(opened|closed)$/;
      $this->{'text'} = '';
      if (defined($user_id)) {
-       say "  comment by user_id=$user_id, note_id=" . $this->{'note_ID'};
+       #say "  comment by user_id=$user_id, note_id=" . $this->{'note_ID'};
        $this->{'users'}{$user_id} = 1;
      }
-#     say "comment dump=" . Dumper($tag->{Attributes})
    }
    
-#   say "start tag=" . Dumper($tag);
-
    # call the super class to properly handle the event
    return $this->SUPER::start_element($tag)
 }
@@ -92,7 +89,6 @@ sub characters
    my $this = shift;
    my $tag = shift;
    $this->{'text'} .= $tag->{'Data'};
-#   say "/mn/ characters=" . $tag->{'Data'};
 }
 
 # when a '</foo>' is seen
@@ -102,31 +98,32 @@ sub end_element
    my $tag = shift;
 
    if ($tag->{LocalName} eq 'note') {
-     say "/mn/ end_note, last note_id=" . $this->{'note_ID'} . ", last_comment_Action=" . $this->{'last_action'} . ",first_text=" . $this->{'first_text'};
-     foreach my $u (keys %{$this->{'users'}}) { 
-       say "\tuser=$u";
-       if ($this->{'last_action'} eq 'opened') {	# we're only interested in (re-)opened notes!
-         say "-- note is opened, remember it!";
-#         say "  current USER{$u}=" . Dumper($USER{Encode::encode_utf8($u)});
-         $USER{Encode::encode_utf8($u)} .= $this->{'note_ID'} . ' ';
-#         say "  done USER{$u}=" . Dumper($USER{Encode::encode_utf8($u)});
-       }
+     if ($this->{'last_action'} eq 'opened') {	# we're only interested in (re-)opened notes!
+        #say "/mn/ end_note (non-closed), last note_id=" . $this->{'note_ID'} . ", first_text=" . $this->{'first_text'};
+        print '.';
+        $NOTE{$this->{'note_ID'}} = Encode::encode_utf8($this->{'first_text'});	# save it to database
+        $this->{'first_text'} = 1;	# reduce memory usage (no need to keep full text in memory)
+        
+        foreach my $u (keys %{$this->{'users'}}) { 
+            my $key=Encode::encode_utf8($u);
+            #say "\tuser=$u -- note is opened, remember it!";
+            if (defined($USER{$key})) {
+               $USER{$key} .= ' ' . $this->{'note_ID'};
+            } else {
+               $USER{$key} = $this->{'note_ID'};
+            }
+        }
      }
    }
    
   if ($tag->{'LocalName'} eq 'comment') {
-    say "end_comment[" . $this->{'note_ID'} .  "], full text=". $this->{'text'};	# full text of this comment
+    # say "end_comment[" . $this->{'note_ID'} .  "], full text=". $this->{'text'};	# full text of this comment
     if (!defined($this->{'first_text'})) {	# only the full text of the FIRST comment (opening of bug)
-        $this->{'first_text'} = $this->{'text'};
+        $this->{'first_text'} = $this->{'text'} || '';
         $this->{'first_text'} =~ s/\s+/ /g;
-        $NOTE{$this->{'note_ID'}} = Encode::encode_utf8($this->{'first_text'});	# save it to database
-        $this->{'first_text'} = 1;	# reduce memory usage (no need to keep full text in memory)
     }
   }
       
-#   say "end tag=" . Dumper($tag);
-
-   # call the super class to properly hadnle the event
    return $this->SUPER::end_element($tag)
 }
 
