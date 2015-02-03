@@ -10,9 +10,9 @@ of pages so you can find Notes that are still open.
 Code allows for searching bugs for multiple users at once (removing
 duplicates in the process: for example if bug was created by one user, and
 commented on by another) by using "s" CGI parameter multiple times (for example:
-<A HREF="https://torres.voyager.hr/~mnalis/my-osm-notes/myosmnotes.cgi?s=Matija+Nalis;s=mnalis+ALTernative;s=ksenija">myosmnotes.cgi?s=Matija+Nalis;s=mnalis+ALTernative;s=ksenija</A>)
+<A HREF="http://my-notes.osm-hr.org/myosmnotes.cgi?s=Matija+Nalis;s=mnalis+ALTernative;s=ksenija">myosmnotes.cgi?s=Matija+Nalis;s=mnalis+ALTernative;s=ksenija</A>)
 
 
-You can also use my <A HREF="https://torres.voyager.hr/~mnalis/my-osm-notes/">developer instance</A> directly.
+You can also use my <A HREF="http://my-notes.osm-hr.org/">developer instance</A> directly.
 
 (OSM Notes were previously known as OSMBugs while hosted at 3rd party servers)
