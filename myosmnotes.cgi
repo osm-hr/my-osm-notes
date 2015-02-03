@@ -59,7 +59,7 @@ if (@all_notes) {
 }
 
 say '<p>Database was last updated: ' . localtime($db_mtime);
-say '<br>Last OSM Notes planet dump timestamp was: ' . localtime($dump_mtime);
+say '<br>Last <A HREF="http://planet.osm.org/notes/">OSM Notes planet dump</A> timestamp was: ' . localtime($dump_mtime);
 say '</body></html>';
 
 exit 0;
