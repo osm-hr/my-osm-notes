@@ -48,8 +48,10 @@ say '</style></head><body>';
 my @all_notes = ();
 say 'Searching for OSM Notes for users: ';
 foreach my $user (@users) {
-    my $key = encode_utf8($user);
-    my $value = $USER{$key};
+    my $org_key = encode_utf8($user); my $key = $org_key;
+    #my $value = $USER{$key};
+    my $value = ''; $DB->seq($key, $value, R_CURSOR );	# this will actually update $key to what is in the database, not what was provided (which could be in different case, since we're case insensitive due to db_compare() override! )
+    if (lc $key ne lc $org_key) { $value = ''; $key = $org_key; }		# note however, $DB->seq() will return partial matches too, which we don't want, so make sure we only match keys whose only difference is case
     my @user_notes = split ' ', $value;
     push @all_notes, @user_notes;
     say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape($key) . '/notes">' . $key . '</A>(' . (scalar @user_notes) . ') ';
