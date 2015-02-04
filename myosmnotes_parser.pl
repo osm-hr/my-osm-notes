@@ -31,7 +31,7 @@ my $parser = XML::SAX::ParserFactory->parser(
   Handler => SAX_OSM_Notes->new
 );
 
-use open qw( :encoding(UTF-8) :std );
+#use open qw( :encoding(UTF-8) :std );
 
 { no autodie qw(unlink); unlink $DB_USERS_FILE_TMP; unlink "__db.$DB_USERS_FILE_TMP"; }
 tie my %USER, "DB_File", "$DB_USERS_FILE_TMP";
