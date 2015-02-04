@@ -28,7 +28,15 @@ my @users = $q->param('s');
 my $db_mtime = (stat($DB_USERS_FILE))[9];
 my $dump_mtime = (stat($OSN_FILE))[9];
 
-tie my %USER, "DB_File", "$DB_USERS_FILE", O_RDONLY;
+
+# case insensitive compare of hash keys
+sub db_compare {
+    my($key1, $key2) = @_;
+    lc $key1 cmp lc $key2;
+}
+$DB_BTREE->{'compare'} = \&db_compare;
+                                                                
+my $DB = tie my %USER, "DB_File", "$DB_USERS_FILE", O_RDONLY, 0444, $DB_BTREE;
 tie my %NOTE, "DB_File", "$DB_NOTES_FILE", O_RDONLY;
 
 say '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>My OpenStreetMap Notes - results</title><style>';
@@ -41,7 +49,8 @@ my @all_notes = ();
 say 'Searching for OSM Notes for users: ';
 foreach my $user (@users) {
     my $key = encode_utf8($user);
-    my @user_notes = split ' ', $USER{$key};
+    my $value = $USER{$key};
+    my @user_notes = split ' ', $value;
     push @all_notes, @user_notes;
     say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape($key) . '/notes">' . $key . '</A>(' . (scalar @user_notes) . ') ';
 }

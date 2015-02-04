@@ -31,10 +31,17 @@ my $parser = XML::SAX::ParserFactory->parser(
   Handler => SAX_OSM_Notes->new
 );
 
+# case insensitive compare of hash keys
+sub db_compare {
+    my($key1, $key2) = @_;
+    lc $key1 cmp lc $key2;
+}
+$DB_BTREE->{'compare'} = \&db_compare;
+                                                                
 #use open qw( :encoding(UTF-8) :std );
 
 { no autodie qw(unlink); unlink $DB_USERS_FILE_TMP; unlink "__db.$DB_USERS_FILE_TMP"; }
-tie my %USER, "DB_File", "$DB_USERS_FILE_TMP";
+tie my %USER, "DB_File", "$DB_USERS_FILE_TMP", O_RDWR|O_CREAT, 0666, $DB_BTREE;
 
 { no autodie qw(unlink); unlink $DB_NOTES_FILE_TMP; unlink "__db.$DB_NOTES_FILE_TMP"; }
 tie my %NOTE, "DB_File", "$DB_NOTES_FILE_TMP";
