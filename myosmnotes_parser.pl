@@ -14,8 +14,10 @@ use XML::SAX;
 
 $ENV{'PATH'} = '/usr/bin:/bin';
 my $OSN_FILE = 'OK.planet-notes-latest.osn.bz2';
-my $DB_NOTES_FILE = 'notes-txt.db';		# contains note_id(s) and first comment (Note description)
-my $DB_USERS_FILE = 'users.db';			# contains user_id(s) and list of all notes he took part in
+my $DB_NOTES_FILE_FINAL = 'notes-txt.db';		# contains note_id(s) and first comment (Note description)
+my $DB_USERS_FILE_FINAL = 'users.db';			# contains user_id(s) and list of all notes he took part in
+my $DB_NOTES_FILE_TMP = $DB_NOTES_FILE_FINAL . '.tmp';
+my $DB_USERS_FILE_TMP = $DB_USERS_FILE_FINAL . '.tmp';
 my $count = 0;
 
 my $start_time = time;
@@ -31,14 +33,20 @@ my $parser = XML::SAX::ParserFactory->parser(
 
 use open qw( :encoding(UTF-8) :std );
 
-{ no autodie qw(unlink); unlink $DB_USERS_FILE; unlink "__db.$DB_USERS_FILE"; }
-tie my %USER, "DB_File", "$DB_USERS_FILE";
+{ no autodie qw(unlink); unlink $DB_USERS_FILE_TMP; unlink "__db.$DB_USERS_FILE_TMP"; }
+tie my %USER, "DB_File", "$DB_USERS_FILE_TMP";
 
-{ no autodie qw(unlink); unlink $DB_NOTES_FILE; unlink "__db.$DB_NOTES_FILE"; }
-tie my %NOTE, "DB_File", "$DB_NOTES_FILE";
+{ no autodie qw(unlink); unlink $DB_NOTES_FILE_TMP; unlink "__db.$DB_NOTES_FILE_TMP"; }
+tie my %NOTE, "DB_File", "$DB_NOTES_FILE_TMP";
 
 
 $parser->parse_file($xml_file);
+
+untie %NOTE;
+untie %USER;
+
+rename $DB_NOTES_FILE_TMP, $DB_NOTES_FILE_FINAL;
+rename $DB_USERS_FILE_TMP, $DB_USERS_FILE_FINAL;
 
 say 'completed in ' . (time - $start_time) . ' seconds.';
 
