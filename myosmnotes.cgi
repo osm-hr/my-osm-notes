@@ -66,7 +66,9 @@ if (@all_notes) {
       my ($note_time, $note_text) = split / /, $NOTE{$n}, 2;
       $note_time =~ s/T/ /; $note_time =~ s/Z/ GMT/;
       my $days_old = int ((gmtime() - Time::Piece->strptime($note_time, '%Y-%m-%d %H:%M:%S %Z'))/86400);
-      say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . $n . '">' . $n . '</A></td><td>' . $note_time . " ($days_old days old)" . '</td><td>' . $note_text . '</td></tr>';
+      if ($ignoreold > 0 and $days_old < $ignoreold) {
+          say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . $n . '">' . $n . '</A></td><td>' . $note_time . '</td><td>' . $note_text . '</td></tr>';
+      }
     }
     say '</tbody></table>';
 } else {
