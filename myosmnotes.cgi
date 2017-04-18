@@ -63,7 +63,6 @@ if (@all_notes) {
     say "<p><table><thead><tr><th>Note ID</th><th>last activity</th><th>first description</th></tr></thead><tbody>";
     foreach my $n (uniq sort {$a <=> $b} @all_notes) {
       my ($note_time, $note_text) = split / /, $NOTE{$n}, 2;
-      my $days = int (gmtime() - Time::Piece->strptime($date1, $format));
       $note_time =~ s/T/ /; $note_time =~ s/Z/ GMT/;
       my $days_old = int ((gmtime() - Time::Piece->strptime($note_time, '%Y-%m-%d %H:%M:%S %Z'))/86400);
       say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . $n . '">' . $n . '</A></td><td>' . $note_time . " ($days_old days old)" . '</td><td>' . $note_text . '</td></tr>';
