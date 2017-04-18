@@ -24,6 +24,8 @@ my $q=CGI->new;
 print $q->header (-charset=>'utf-8');
 
 my @users = $q->param('s');
+my $ignoreold = $q->param('ignoreold') || 0;
+if ($ignoreold =~ /^(\d{0,5})$/) { $ignoreold = $1 } else { die "ignoreold must be a number"; }
 
 my $db_mtime = (stat($DB_USERS_FILE))[9];
 my $dump_mtime = (stat($OSN_FILE))[9];
@@ -61,8 +63,10 @@ if (@all_notes) {
     say "<p><table><thead><tr><th>Note ID</th><th>last activity</th><th>first description</th></tr></thead><tbody>";
     foreach my $n (uniq sort {$a <=> $b} @all_notes) {
       my ($note_time, $note_text) = split / /, $NOTE{$n}, 2;
+      my $days = int (gmtime() - Time::Piece->strptime($date1, $format));
       $note_time =~ s/T/ /; $note_time =~ s/Z/ GMT/;
-      say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . $n . '">' . $n . '</A></td><td>' . $note_time . '</td><td>' . $note_text . '</td></tr>';
+      my $days_old = int ((gmtime() - Time::Piece->strptime($note_time, '%Y-%m-%d %H:%M:%S %Z'))/86400);
+      say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . $n . '">' . $n . '</A></td><td>' . $note_time . " ($days_old days old)" . '</td><td>' . $note_text . '</td></tr>';
     }
     say '</tbody></table>';
 } else {
