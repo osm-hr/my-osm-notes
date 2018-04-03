@@ -129,7 +129,7 @@ sub end_element
         #print '.';
 	#warn "no last_date for id=" . $this->{'note_ID'} if !defined $this->{'last_date'};
 	#warn "no first_text for id=" . $this->{'note_ID'} . ' date=' . $this->{'last_date'} if !defined $this->{'first_text'};
-        $NOTE{$this->{'note_ID'}} = $this->{'last_date'} . ' ' . encode_utf8($this->{'first_text'} | ' ');	# save it to database
+        $NOTE{$this->{'note_ID'}} = $this->{'last_date'} . ' ' . encode_utf8($this->{'first_text'} || ' ');	# save it to database
         $this->{'first_text'} = 1;	# reduce memory usage (no need to keep full text in memory)
         
         foreach my $u (keys %{$this->{'users'}}) { 
