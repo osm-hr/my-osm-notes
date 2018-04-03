@@ -8,6 +8,7 @@ use autodie;
 use feature 'say';
 
 use DB_File;
+use DBM_Filter;
 use XML::SAX;
 
 $ENV{'PATH'} = '/usr/bin:/bin';
@@ -40,13 +41,20 @@ $DB_BTREE->{'compare'} = \&db_compare;
 #use open qw( :encoding(UTF-8) :std );
 
 { no autodie qw(unlink); unlink $DB_USERS_FILE_TMP; unlink "__db.$DB_USERS_FILE_TMP"; }
-tie my %USER, "DB_File", "$DB_USERS_FILE_TMP", O_RDWR|O_CREAT, 0666, $DB_BTREE;
+my $db_user = tie my %USER, "DB_File", "$DB_USERS_FILE_TMP", O_RDWR|O_CREAT, 0666, $DB_BTREE;
+$db_user->Filter_Key_Push('utf8');
+$db_user->Filter_Value_Push('utf8');
 
 { no autodie qw(unlink); unlink $DB_NOTES_FILE_TMP; unlink "__db.$DB_NOTES_FILE_TMP"; }
-tie my %NOTE, "DB_File", "$DB_NOTES_FILE_TMP";
+my $db_note = tie my %NOTE, "DB_File", "$DB_NOTES_FILE_TMP";
+$db_note->Filter_Key_Push('utf8');
+$db_note->Filter_Value_Push('utf8');
 
 
 $parser->parse_file($xml_file);
+
+undef $db_user;
+undef $db_note;
 
 untie %NOTE;
 untie %USER;
@@ -67,8 +75,6 @@ exit 0;
 
 package SAX_OSM_Notes;
 use base qw(XML::SAX::Base);
-use Encode;
-
 
 use strict;
 use warnings;
@@ -129,16 +135,15 @@ sub end_element
         #print '.';
 	#warn "no last_date for id=" . $this->{'note_ID'} if !defined $this->{'last_date'};
 	#warn "no first_text for id=" . $this->{'note_ID'} . ' date=' . $this->{'last_date'} if !defined $this->{'first_text'};
-        $NOTE{$this->{'note_ID'}} = $this->{'last_date'} . ' ' . encode_utf8($this->{'first_text'} || ' ');	# save it to database
+        $NOTE{$this->{'note_ID'}} = $this->{'last_date'} . ' ' . ($this->{'first_text'} || ' ');	# save it to database
         $this->{'first_text'} = 1;	# reduce memory usage (no need to keep full text in memory)
         
-        foreach my $u (keys %{$this->{'users'}}) { 
-            my $key = encode_utf8($u);
-            #say "\tuser=$u -- note is opened, remember it!";
-            if (defined($USER{$key})) {
-               $USER{$key} .= ' ' . $this->{'note_ID'};
+        foreach my $username (keys %{$this->{'users'}}) {
+            #say "\tuser=$username -- note is opened, remember it!";
+            if (defined($USER{$username})) {
+               $USER{$username} .= ' ' . $this->{'note_ID'};
             } else {
-               $USER{$key} = $this->{'note_ID'};
+               $USER{$username} = $this->{'note_ID'};
             }
         }
      }
