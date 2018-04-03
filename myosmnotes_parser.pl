@@ -22,10 +22,10 @@ my $count = 0;
 my $start_time = time;
 print 'parsing... ';
 
-#open (my $xml_file, '-|:encoding(utf8)', "bzcat $OSN_FILE");
-open (my $xml_file, '-|', "bzcat $OSN_FILE");
-binmode STDOUT, ":utf8"; 
-binmode STDERR, ":utf8";
+open (my $xml_file, '-|:encoding(utf8)', "bzcat $OSN_FILE");
+#open (my $xml_file, '-|', "bzcat $OSN_FILE");
+binmode STDOUT, ":encoding(UTF-8)";
+binmode STDERR, ":encoding(UTF-8)";
 
 my $parser = XML::SAX::ParserFactory->parser(
   Handler => SAX_OSM_Notes->new
@@ -43,11 +43,9 @@ $DB_BTREE->{'compare'} = \&db_compare;
 { no autodie qw(unlink); unlink $DB_USERS_FILE_TMP; unlink "__db.$DB_USERS_FILE_TMP"; }
 my $db_user = tie my %USER, "DB_File", "$DB_USERS_FILE_TMP", O_RDWR|O_CREAT, 0666, $DB_BTREE;
 $db_user->Filter_Key_Push('utf8');
-$db_user->Filter_Value_Push('utf8');
 
 { no autodie qw(unlink); unlink $DB_NOTES_FILE_TMP; unlink "__db.$DB_NOTES_FILE_TMP"; }
 my $db_note = tie my %NOTE, "DB_File", "$DB_NOTES_FILE_TMP";
-$db_note->Filter_Key_Push('utf8');
 $db_note->Filter_Value_Push('utf8');
 
 
