@@ -26,7 +26,7 @@ binmode STDERR, ":encoding(UTF-8)";
 my $q=CGI->new;
 print $q->header (-charset=>'utf-8');
 
-my @users = $q->multi_param('s');
+my @users = defined ($q->multi_param) ? $q->multi_param('s') : $q->param('s');
 my $ignoreold = $q->param('ignoreold') || 0;
 if ($ignoreold =~ /^(\d{0,5})$/) { $ignoreold = $1 } else { die "ignoreold must be a number"; }
 
