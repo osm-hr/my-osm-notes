@@ -7,6 +7,7 @@ use warnings;
 use autodie;
 use feature 'say';
 
+use Encode;
 use CGI qw(-utf8);
 use CGI::Carp;
 use URI::Escape;
@@ -69,7 +70,7 @@ foreach my $org_key (@users) {
     if ( ($found_key ne $org_key) and (lc $found_key ne lc $org_key) ) { $value = ''; $found_key = $org_key; }		# note however, $DB_user->seq() will return partial matches too, which we don't want, so make sure we only match keys whose only difference is case
     my @user_notes = split ' ', $value;
     push @all_notes, @user_notes;
-    say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape($found_key) . '/notes">' . $found_key . '</A>(' . (scalar @user_notes) . ') ';
+    say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape(encode('UTF-8', $found_key)) . '/notes">' . $found_key . '</A>(' . (scalar @user_notes) . ') ';
 }
 
 if (@all_notes) {
