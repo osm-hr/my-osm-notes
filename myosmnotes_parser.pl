@@ -2,8 +2,6 @@
 # Matija Nalis <mnalis-git-openstreetmap@voyager.hr> GPLv3+ started 20150201
 # parses OSM notes planet dump into BerkeleyDB
 
-use utf8;
-
 use strict;
 use warnings;
 use autodie;
@@ -26,6 +24,7 @@ print 'parsing... ';
 #open (my $xml_file, '-|:encoding(utf8)', "bzcat $OSN_FILE");
 open (my $xml_file, '-|', "bzcat $OSN_FILE");
 binmode STDOUT, ":utf8"; 
+binmode STDERR, ":utf8";
 
 my $parser = XML::SAX::ParserFactory->parser(
   Handler => SAX_OSM_Notes->new
@@ -83,10 +82,11 @@ sub start_element
    
    if ($tag->{'LocalName'} eq 'note') {
      my $note_id = $tag->{'Attributes'}{'{}id'}{'Value'};
+     my $created_at = $tag->{'Attributes'}{'{}created_at'}{'Value'};
      #say "\n/mn/ start note_id=$note_id";
      $this->{'note_ID'} = $note_id;
      $this->{'first_text'} = undef;
-     $this->{'last_date'} = undef;
+     $this->{'last_date'} = $created_at;
      %{$this->{'users'}} = ();
      #Dumper($tag->{Attributes})
    }
@@ -127,7 +127,9 @@ sub end_element
         #if ($count++ > 999) { say "exiting on $count for DEBUG, FIXME"; exit 0;} ; print "[$count] ";
         #say "end_note (non-closed), last note_id=" . $this->{'note_ID'} . ", first_text=" . $this->{'first_text'} . ", last_date=" . $this->{'last_date'};
         #print '.';
-        $NOTE{$this->{'note_ID'}} = $this->{'last_date'} . ' ' . encode_utf8($this->{'first_text'});	# save it to database
+	#warn "no last_date for id=" . $this->{'note_ID'} if !defined $this->{'last_date'};
+	#warn "no first_text for id=" . $this->{'note_ID'} . ' date=' . $this->{'last_date'} if !defined $this->{'first_text'};
+        $NOTE{$this->{'note_ID'}} = $this->{'last_date'} . ' ' . encode_utf8($this->{'first_text'} | ' ');	# save it to database
         $this->{'first_text'} = 1;	# reduce memory usage (no need to keep full text in memory)
         
         foreach my $u (keys %{$this->{'users'}}) { 
