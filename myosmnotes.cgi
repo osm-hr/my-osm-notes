@@ -26,7 +26,7 @@ binmode STDERR, ":encoding(UTF-8)";
 my $q=CGI->new;
 print $q->header (-charset=>'utf-8');
 
-my @users = defined ($q->multi_param) ? $q->multi_param('s') : $q->param('s');
+my @users = defined (&CGI::multi_param) ? $q->multi_param('s') : $q->param('s');
 my $ignoreold = $q->param('ignoreold') || 0;
 if ($ignoreold =~ /^(\d{0,5})$/) { $ignoreold = $1 } else { die "ignoreold must be a number"; }
 
@@ -64,7 +64,7 @@ foreach my $org_key (@users) {
     #my $upg_key = $org_key; utf8::upgrade($org_key);
     #say "seeking for: $user: org=$org_key (upg=\L$upg_org_key), current=$found_key (upg=\L$upg_key), value=$value";
 
-    say "seeking: org=$org_key (lc=\L$org_key), current=$found_key (lc=\L$found_key), value=$value";
+    #say "seeking: org=$org_key (lc=\L$org_key), current=$found_key (lc=\L$found_key), value=$value";
 
     if ( ($found_key ne $org_key) and (lc $found_key ne lc $org_key) ) { $value = ''; $found_key = $org_key; }		# note however, $DB_user->seq() will return partial matches too, which we don't want, so make sure we only match keys whose only difference is case
     my @user_notes = split ' ', $value;
