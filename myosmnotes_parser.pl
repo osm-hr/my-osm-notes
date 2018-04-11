@@ -22,8 +22,8 @@ my $count = 0;
 my $start_time = time;
 print 'parsing... ';
 
-open (my $xml_file, '-|:encoding(utf8)', "bzcat $OSN_FILE");
-#open (my $xml_file, '-|', "bzcat $OSN_FILE");
+open (my $xml_file, '-|', "bzcat $OSN_FILE");
+#binmode $xml_file, ":encoding(UTF-8)";	# FIXME: segfaults on perl 5.18.2-2ubuntu1.3 on Ubuntu 14.04.5 LTS
 binmode STDOUT, ":encoding(UTF-8)";
 binmode STDERR, ":encoding(UTF-8)";
 
