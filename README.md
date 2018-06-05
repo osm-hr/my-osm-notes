@@ -13,6 +13,7 @@ commented on by another) by using "s" CGI parameter multiple times (for example:
 <A HREF="http://my-notes.osm-hr.org/myosmnotes.cgi?s=Matija+Nalis;s=mnalis+ALTernative;s=ksenija">myosmnotes.cgi?s=Matija+Nalis;s=mnalis+ALTernative;s=ksenija</A>)
 
 
-You can also use my <A HREF="http://my-notes.osm-hr.org/">developer instance</A> directly.
+Our <A HREF="http://my-notes.osm-hr.org/">developer instance</A> is currently offline, pending
+<A HREF="https://blog.openstreetmap.org/2018/05/14/preparing-for-the-gdpr/">GDPR issues</A>. 
 
 (OSM Notes were previously known as OSMBugs while hosted at 3rd party servers)
