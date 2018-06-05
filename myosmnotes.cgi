@@ -42,10 +42,10 @@ sub db_compare {
 }
 $DB_BTREE->{'compare'} = \&db_compare;
                                                                 
-my $DB_user = tie my %USER, "DB_File", "$DB_USERS_FILE", O_RDONLY, 0444, $DB_BTREE;
+my $DB_user = tie my %USER, "DB_File", "$DB_USERS_FILE", O_RDONLY, 0444, $DB_BTREE or die "no DB $DB_USERS_FILE: $!";
 $DB_user->Filter_Key_Push('utf8');
 
-my $DB_note = tie my %NOTE, "DB_File", "$DB_NOTES_FILE", O_RDONLY;
+my $DB_note = tie my %NOTE, "DB_File", "$DB_NOTES_FILE", O_RDONLY or die "no DB $DB_NOTES_FILE: $!";;
 $DB_note->Filter_Value_Push('utf8');
 
 say '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>My OpenStreetMap Notes - results</title><style>';
