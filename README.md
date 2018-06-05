@@ -14,6 +14,9 @@ commented on by another) by using "s" CGI parameter multiple times (for example:
 
 
 Our <A HREF="http://my-notes.osm-hr.org/">developer instance</A> is currently offline, pending
-<A HREF="https://blog.openstreetmap.org/2018/05/14/preparing-for-the-gdpr/">GDPR issues</A>. 
+<A HREF="https://blog.openstreetmap.org/2018/05/14/preparing-for-the-gdpr/">GDPR issues</A>.
+<br>
+You may want to install your instance instead of waiting for us to (possibly) implement GDPR rules and reenable ours.
+Please let us know if you make your version public, so we can avoid duplicate efforts.
 
 (OSM Notes were previously known as OSMBugs while hosted at 3rd party servers)
