@@ -19,6 +19,7 @@ my $DB_NOTES_FILE_TMP = $DB_NOTES_FILE_FINAL . '.tmp';
 my $DB_USERS_FILE_TMP = $DB_USERS_FILE_FINAL . '.tmp';
 my $count = 0;
 
+#$| = 1;
 my $start_time = time;
 print 'parsing... ';
 
@@ -27,10 +28,13 @@ open (my $xml_file, '-|', "bzcat $OSN_FILE");
 binmode STDOUT, ":encoding(UTF-8)";
 binmode STDERR, ":encoding(UTF-8)";
 
+print 'opened bz2... ';
+
 my $parser = XML::SAX::ParserFactory->parser(
   Handler => SAX_OSM_Notes->new
 );
 
+print 'handler... ';
 # case insensitive compare of hash keys
 sub db_compare {
     my($key1, $key2) = @_;
@@ -48,7 +52,7 @@ $db_user->Filter_Key_Push('utf8');
 my $db_note = tie my %NOTE, "DB_File", "$DB_NOTES_FILE_TMP";
 $db_note->Filter_Value_Push('utf8');
 
-
+print 'go... ';
 $parser->parse_file($xml_file);
 
 undef $db_user;
@@ -84,6 +88,8 @@ sub start_element
    my $this = shift;
    my $tag = shift;
    
+   #print ".";
+
    if ($tag->{'LocalName'} eq 'note') {
      my $note_id = $tag->{'Attributes'}{'{}id'}{'Value'};
      my $created_at = $tag->{'Attributes'}{'{}created_at'}{'Value'};
@@ -157,6 +163,14 @@ sub end_element
   }
       
    return $this->SUPER::end_element($tag)
+}
+
+sub start_document
+{
+   my $this = shift;
+   my $tag = shift;
+   say "start document";
+   return $this->SUPER::start_document($tag)
 }
 
 1;

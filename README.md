@@ -16,3 +16,7 @@ commented on by another) by using "s" CGI parameter multiple times (for example:
 You can also use my <A HREF="http://my-notes.osm-hr.org/">developer instance</A> directly.
 
 (OSM Notes were previously known as OSMBugs while hosted at 3rd party servers)
+
+Installing:
+make sure you install libxml-sax-expatxs-perl package - pureperl is going to try to load everything in memory first
+and be extremly slow and resource hungry!
