@@ -35,18 +35,11 @@ my $parser = XML::SAX::ParserFactory->parser(
 );
 
 print 'handler... ';
-# case insensitive compare of hash keys
-sub db_compare {
-    my($key1, $key2) = @_;
-    lc $key1 cmp lc $key2;
-}
-$DB_BTREE->{'compare'} = \&db_compare;
                                                                 
 #use open qw( :encoding(UTF-8) :std );
 
 { no autodie qw(unlink); unlink $DB_USERS_FILE_TMP; unlink "__db.$DB_USERS_FILE_TMP"; }
 my $db_user = tie my %USER, "DB_File", "$DB_USERS_FILE_TMP", O_RDWR|O_CREAT, 0666, $DB_BTREE;
-$db_user->Filter_Key_Push('utf8');
 
 { no autodie qw(unlink); unlink $DB_NOTES_FILE_TMP; unlink "__db.$DB_NOTES_FILE_TMP"; }
 my $db_note = tie my %NOTE, "DB_File", "$DB_NOTES_FILE_TMP";
@@ -81,7 +74,9 @@ use base qw(XML::SAX::Base);
 use strict;
 use warnings;
 
-use Data::Dumper;
+#use Data::Dumper;
+use Digest::SHA qw(sha1);
+
 # when a '<foo>' is seen
 sub start_element
 {
@@ -143,11 +138,12 @@ sub end_element
         $this->{'first_text'} = 1;	# reduce memory usage (no need to keep full text in memory)
         
         foreach my $username (keys %{$this->{'users'}}) {
-            #say "\tuser=$username -- note is opened, remember it!";
-            if (defined($USER{$username})) {
-               $USER{$username} .= ' ' . $this->{'note_ID'};
+            my $userhash = sha1($username);
+            #say "\tuser=$username ($userhash) -- note is opened, remember it!";
+            if (defined($USER{$userhash})) {
+               $USER{$userhash} .= ' ' . $this->{'note_ID'};
             } else {
-               $USER{$username} = $this->{'note_ID'};
+               $USER{$userhash} = $this->{'note_ID'};
             }
         }
      }

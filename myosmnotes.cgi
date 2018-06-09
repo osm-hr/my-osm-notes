@@ -15,6 +15,7 @@ use DB_File;
 use DBM_Filter;
 use List::MoreUtils qw(uniq);
 use Time::Piece;
+use Digest::SHA qw(sha1);
 
 $ENV{'PATH'} = '/usr/bin:/bin';
 my $OSN_FILE = 'OK.planet-notes-latest.osn.bz2';
@@ -34,16 +35,7 @@ if ($ignoreold =~ /^(\d{0,5})$/) { $ignoreold = $1 } else { die "ignoreold must 
 my $db_mtime = (stat($DB_USERS_FILE))[9];
 my $dump_mtime = (stat($OSN_FILE))[9];
 
-
-# case insensitive compare of hash keys
-sub db_compare {
-    my($key1, $key2) = @_;
-    lc $key1 cmp lc $key2;
-}
-$DB_BTREE->{'compare'} = \&db_compare;
-                                                                
 my $DB_user = tie my %USER, "DB_File", "$DB_USERS_FILE", O_RDONLY, 0444, $DB_BTREE or die "no DB $DB_USERS_FILE: $!";
-$DB_user->Filter_Key_Push('utf8');
 
 my $DB_note = tie my %NOTE, "DB_File", "$DB_NOTES_FILE", O_RDONLY or die "no DB $DB_NOTES_FILE: $!";;
 $DB_note->Filter_Value_Push('utf8');
@@ -56,21 +48,13 @@ say '</style></head><body>';
 
 my @all_notes = ();
 say 'Searching for OSM Notes for users: ';
-foreach my $org_key (@users) {
-    my $found_key = $org_key;
-    #my $value = $USER{$found_key};
-    my $value = ''; $DB_user->seq($found_key, $value, R_CURSOR );	# this will actually update $found_key to what is in the database, not what was provided (which could be in different case, since we're case insensitive due to db_compare() override! )
+foreach my $username (@users) {
+    my $org_key = sha1($username);
+    my $value = $USER{$org_key};
 
-    #my $upg_org_key = $org_key; utf8::upgrade($org_key);
-    #my $upg_key = $org_key; utf8::upgrade($org_key);
-    #say "seeking for: $user: org=$org_key (upg=\L$upg_org_key), current=$found_key (upg=\L$upg_key), value=$value";
-
-    #say "seeking: org=$org_key (lc=\L$org_key), current=$found_key (lc=\L$found_key), value=$value";
-
-    if ( ($found_key ne $org_key) and (lc $found_key ne lc $org_key) ) { $value = ''; $found_key = $org_key; }		# note however, $DB_user->seq() will return partial matches too, which we don't want, so make sure we only match keys whose only difference is case
     my @user_notes = split ' ', $value;
     push @all_notes, @user_notes;
-    say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape(encode('UTF-8', $found_key)) . '/notes">' . $found_key . '</A>(' . (scalar @user_notes) . ') ';
+    say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape(encode('UTF-8', $username)) . '/notes">' . $username . '</A>(' . (scalar @user_notes) . ') ';
 }
 
 if (@all_notes) {
