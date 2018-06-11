@@ -81,7 +81,7 @@ use base qw(XML::SAX::Base);
 use strict;
 use warnings;
 
-use Data::Dumper;
+#use Data::Dumper;
 # when a '<foo>' is seen
 sub start_element
 {
