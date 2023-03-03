@@ -76,7 +76,7 @@ foreach my $org_key (@users) {
 if (@all_notes) {
     say "<p><table><thead><tr><th>Note ID</th><th>last activity</th><th>first description</th></tr></thead><tbody>";
     foreach my $n (uniq sort {$a <=> $b} @all_notes) {
-      my ($note_time, $note_text) = split / /, $NOTE{$n}, 2;
+      my ($last_is_resurvey, $note_time, $note_text) = split / /, $NOTE{$n}, 3;
       $note_time =~ s/T/ /; $note_time =~ s/Z/ GMT/;
       my $days_old = int ((gmtime() - Time::Piece->strptime($note_time, '%Y-%m-%d %H:%M:%S %Z'))/86400);
       if ($days_old < $ignoreold or !$ignoreold) {
