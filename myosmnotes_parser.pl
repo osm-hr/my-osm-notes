@@ -21,11 +21,15 @@ my $DB_NOTES_FILE_TMP = $DB_NOTES_FILE_FINAL . '.tmp';
 my $DB_USERS_FILE_TMP = $DB_USERS_FILE_FINAL . '.tmp';
 my $count = 0;
 
+my $DECOMPRESSOR = 'bzcat';
+if (-e '/usr/bin/pbzip2') { $DECOMPRESSOR = 'pbzip2 -dc' }  # use faster decompressing if available
+
+
 #$| = 1;
 my $start_time = time;
 print 'parsing... ';
 
-open (my $xml_file, '-|', "bzcat $OSN_FILE");
+open (my $xml_file, '-|', "$DECOMPRESSOR $OSN_FILE");
 #binmode $xml_file, ":encoding(UTF-8)";	# FIXME: segfaults on perl 5.18.2-2ubuntu1.3 on Ubuntu 14.04.5 LTS
 binmode STDOUT, ":encoding(UTF-8)";
 binmode STDERR, ":encoding(UTF-8)";
