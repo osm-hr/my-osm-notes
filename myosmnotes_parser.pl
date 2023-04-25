@@ -27,7 +27,7 @@ if (-e '/usr/bin/pbzip2') { $DECOMPRESSOR = 'pbzip2 -dc' }  # use faster decompr
 
 #$| = 1; # FIXME only enable for debug to avoid interleaved STDOUT/STDERR
 my $start_time = time;
-print 'parsing... ';
+print 'parsing Q&D... ';
 
 open (my $xml_file, '-|', "$DECOMPRESSOR $OSN_FILE");
 #open my $xml_file, '<', 'a';
@@ -77,6 +77,23 @@ exit 0;
 ######### QUICK & DIRTY parser below ##############
 ###################################################
 
+sub fix_entities($)
+{
+  my ($txt) = @_;
+  return $txt if !$txt;
+  
+  $txt =~ s/^\s*//g;
+  $txt =~ s/\s*$//g;
+  
+  $txt =~ s{&lt;}{<}gi;
+  $txt =~ s{&gt;}{>}gi;
+  $txt =~ s{&quot;}{"}gi;
+  $txt =~ s{&#13;}{}gi;
+  $txt =~ s{&amp;}{&}gi;    # this one must be at the end!
+
+  return $txt;
+}
+
 sub parse_file
 {
    my ($xml_file) = @_;
@@ -115,7 +132,7 @@ sub parse_file
      if ($line =~ s/^\s*<comment action="(.+?)".*?timestamp="(.+?)"(?: .*?user="(.+?)")?.*?>//) {
        my $action = $1;
        my $timestamp = $2;
-       my $user_id = $3;
+       my $user_id = fix_entities($3);
        $this->{'inside_comment'} = 1;
        $this->{'last_action'} = $1 if $action =~ /^(?:re)?(opened|closed)\s*$/;
        $this->{'text'} = '';  # start with empty string, we'll fill it later in characters()
@@ -135,7 +152,7 @@ sub parse_file
      # concat text between tags
      if ($this->{'inside_comment'} and $line =~ s/^\s*([^<]*?)\s*($|<)/$2/) {
        #say  '     adding >' . $1 . '< to text: >' . $this->{'text'} . '<';
-       $this->{'text'} .= $1;            
+       $this->{'text'} .= $1 . ' ';
      }
      
      #print "DEBUG4: parsing line: $line";
@@ -143,6 +160,7 @@ sub parse_file
      if ($line =~ s/^\s*<\/comment>\s*$//) {
        $this->{'inside_comment'} = 0;
        my $current_text = $this->{'text'};
+       chop $current_text;
        if ($current_text =~ /#surveyme/i) {
            $this->{'last_comment_is_resurvey'} = 1;
        }
@@ -164,7 +182,7 @@ sub parse_file
           #print '.';
           #warn "no last_date for id=" . $this->{'note_ID'} if !defined $this->{'last_date'};
           #warn "no first_text for id=" . $this->{'note_ID'} . ' date=' . $this->{'last_date'} if !defined $this->{'first_text'};
-          $NOTE{$this->{'note_ID'}} = $this->{'last_comment_is_resurvey'} . ' ' . $this->{'last_date'} . ' ' . ($this->{'first_text'} || ' ');	# save it to database
+          $NOTE{$this->{'note_ID'}} = $this->{'last_comment_is_resurvey'} . ' ' . $this->{'last_date'} . ' ' . fix_entities($this->{'first_text'} || ' ');	# save it to database
           $this->{'first_text'} = 1;	# reduce memory usage (no need to keep full text in memory, but still evalute to true)
           
           foreach my $username (keys %{$this->{'users'}}) {
