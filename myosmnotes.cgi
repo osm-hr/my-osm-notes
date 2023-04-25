@@ -32,6 +32,8 @@ my $ignoreold = $q->param('ignoreold') || 0;
 if ($ignoreold =~ /^(\d{0,5})$/) { $ignoreold = $1 } else { die "ignoreold must be a number"; }
 my $skip_surveyme = $q->param('skip_surveyme') || 0;
 if ($skip_surveyme =~ /^(0|1|on)$/i) { $skip_surveyme = $1 } else { die "skip_surveyme must be a number"; }
+my $skip_notcreator = $q->param('skip_notcreator') || 0;
+if ($skip_notcreator =~ /^(0|1|on)$/i) { $skip_notcreator = $1 } else { die "skip_notcreator must be a number"; }
 
 my $db_mtime = (stat($DB_USERS_FILE))[9];
 my $dump_mtime = (stat($OSN_FILE))[9];
@@ -77,9 +79,11 @@ foreach my $org_key (@users) {
 
 if (@all_notes) {
     say "<p><table><thead><tr><th>Note ID</th><th>last activity</th><th>first description</th></tr></thead><tbody>";
-    foreach my $n (uniq sort {$a <=> $b} @all_notes) {
+    foreach my $nc (uniq sort {substr($a,1) <=> substr($b,1)} @all_notes) {
+      my $n = substr($nc,1);   # extract just a number of a note
+      next if $skip_notcreator and substr($nc,0,1) ne 'c';  # if requested, ignore notes which we didn't create
       my ($last_is_resurvey, $note_time, $note_text) = split / /, $NOTE{$n}, 3;
-      next if $skip_surveyme and $last_is_resurvey;     # if requested, ignore notes with "#surveyme" in last comment
+      next if $skip_surveyme and $last_is_resurvey;         # if requested, ignore notes with "#surveyme" in last comment
       $note_time =~ s/T/ /; $note_time =~ s/Z/ GMT/;
       my $days_old = int ((gmtime() - Time::Piece->strptime($note_time, '%Y-%m-%d %H:%M:%S %Z'))/86400);
       if ($days_old < $ignoreold or !$ignoreold) {
