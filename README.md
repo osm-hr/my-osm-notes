@@ -12,6 +12,8 @@ duplicates in the process: for example if bug was created by one user, and
 commented on by another) by using "s" CGI parameter multiple times (for example:
 <A HREF="http://my-notes.osm-hr.org/myosmnotes.cgi?s=Matija+Nalis;s=mnalis+ALTernative;s=ksenija">myosmnotes.cgi?s=Matija+Nalis;s=mnalis+ALTernative;s=ksenija</A>)
 
+It also allows for optional skipping notes marked with `#surveyme`, as well as optional skipping of notes which the
+user haven't authored (but only commented on)
 
 Our <A HREF="http://my-notes.osm-hr.org/">developer instance</A> is currently offline, pending
 <A HREF="https://blog.openstreetmap.org/2018/05/14/preparing-for-the-gdpr/">GDPR issues</A>. 
