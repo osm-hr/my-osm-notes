@@ -102,6 +102,7 @@ sub start_element
      #say "\n/mn/ start note_id=$note_id";
      $this->{'note_ID'} = $note_id;
      $this->{'first_text'} = undef;
+     $this->{'first_user'} = undef;
      $this->{'last_date'} = $created_at;
      %{$this->{'users'}} = ();
      #Dumper($tag->{Attributes})
@@ -115,6 +116,10 @@ sub start_element
      $this->{'last_comment_is_resurvey'} = 0;   # every new comment resets it to 0 as it does NOT contain "#surveyme"  at this time (as "text" is empty)
      if (defined($user_id)) {
        #say "  comment by user_id=$user_id, note_id=" . $this->{'note_ID'};
+       if (!defined ($this->{'first_user'})) {
+          #say "  first user/creator of this note: $user_id";
+          $this->{'first_user'} = $user_id;
+       }
        $this->{'users'}{$user_id} = 1;
      }
      $this->{'last_date'} = $tag->{'Attributes'}{'{}timestamp'}{'Value'};
@@ -151,11 +156,9 @@ sub end_element
         
         foreach my $username (keys %{$this->{'users'}}) {
             #say "\tuser=$username -- note is opened, remember it!";
-            if (defined($USER{$username})) {
-               $USER{$username} .= ' ' . $this->{'note_ID'};
-            } else {
-               $USER{$username} = $this->{'note_ID'};
-            }
+            my $prefix = defined($USER{$username}) ? ' ' : '';
+            $prefix .= ($username eq $this->{'first_user'}) ? 'c' : 'm';  # c=creator of note, m=only commented on the note
+            $USER{$username} .= $prefix . $this->{'note_ID'};
         }
      }
    }
