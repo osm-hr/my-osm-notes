@@ -2,7 +2,7 @@
 # Matija Nalis <mnalis-git-openstreetmap@voyager.hr> GPLv3+ started 20150201
 # parses OSM notes planet dump into BerkeleyDB
 #
-# WARNING: this branch users unsafe, but FAST parser (e.g. 20 seconds instead of 8 minutes!)
+# WARNING: this branch users unsafe, but FAST parser (e.g. 2:15 minutes instead of 5:15 minutes)
 # FIXME: might fail to parse multiline comments and will break if syntax of XML changes even slightly so beware! Use for fast develop testing only! And be buggy otherwise...
 
 use strict;
