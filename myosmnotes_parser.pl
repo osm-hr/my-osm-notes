@@ -27,7 +27,7 @@ if (-e '/usr/bin/pbzip2') { $DECOMPRESSOR = 'pbzip2 -dc' }  # use faster decompr
 
 #$| = 1;
 my $start_time = time;
-print 'parsing... ';
+print 'parsing SAX... ';
 
 open (my $xml_file, '-|', "$DECOMPRESSOR $OSN_FILE");
 #binmode $xml_file, ":encoding(UTF-8)";	# FIXME: segfaults on perl 5.18.2-2ubuntu1.3 on Ubuntu 14.04.5 LTS
