@@ -109,7 +109,7 @@ sub start_element
    }
    
    if ($tag->{'LocalName'} eq 'comment') {
-     my $user_id = $tag->{'Attributes'}{'{}user'}{'Value'};
+     my $user_id = $tag->{'Attributes'}{'{}user'}{'Value'} || '';
      my $action = $tag->{'Attributes'}{'{}action'}{'Value'};
      $this->{'last_action'} = $1 if $action =~ /^(?:re)?(opened|closed)$/;
      $this->{'text'} = '';  # start with empty string, we'll fill it later in characters()
