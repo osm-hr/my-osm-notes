@@ -133,7 +133,7 @@ sub parse_file
      if ($line =~ s/^\s*<comment action="(.+?)".*?timestamp="(.+?)"(?: .*?user="(.+?)")?.*?>//) {
        my $action = $1;
        my $timestamp = $2;
-       my $user_id = fix_entities($3);
+       my $user_id = $3 ? fix_entities($3) : '';
        $this->{'inside_comment'} = 1;
        $this->{'last_action'} = $1 if $action =~ /^(?:re)?(opened|closed)\s*$/;
        $this->{'text'} = '';  # start with empty string, we'll fill it later in characters()
