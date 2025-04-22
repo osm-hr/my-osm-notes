@@ -40,9 +40,9 @@ my %HTTP_COMMON_HEADERS = (
 # adds some some security HTTP headers
 $HTTP_COMMON_HEADERS{'-Strict-Transport-Security'} = q{max-age=15768000} if defined $ENV{'HTTPS'} and $ENV{'HTTPS'};  # enable HSTS if https:// is active
 
-$HTTP_COMMON_HEADERS{'-Access_Control_Allow_Methods'} = q{GET, POST, HEAD};
-my $allowed_origin = $q->http('Origin');    # allow only same domain access
+my $allowed_origin = $q->http('Origin'); $allowed_origin = ($q->https() ? 'https' : 'http').'://'.$q->server_name if !defined $allowed_origin;  # allow only same domain access
 $HTTP_COMMON_HEADERS{'-Access_Control_Allow_Origin'} = $allowed_origin if defined $allowed_origin;
+$HTTP_COMMON_HEADERS{'-Access_Control_Allow_Methods'} = q{GET, POST, HEAD};
 
 $HTTP_COMMON_HEADERS{'-Referrer-Policy'} = q{origin-when-cross-origin, strict-origin-when-cross-origin};
 $HTTP_COMMON_HEADERS{'-X-Content-Type-Options'} =  q{nosniff};
