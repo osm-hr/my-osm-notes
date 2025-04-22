@@ -8,6 +8,7 @@ use autodie;
 use feature 'say';
 
 use Encode;
+use POSIX qw(strftime);
 use CGI qw(-utf8 escapeHTML);
 use CGI::Carp;
 use URI::Escape;
@@ -26,8 +27,15 @@ my $DB_USERS_FILE = 'users.db';			# Note: same as in myosmnotes_parser.pl
 binmode STDOUT, ":encoding(UTF-8)";
 binmode STDERR, ":encoding(UTF-8)";
 
+my $db_mtime = (stat($DB_USERS_FILE))[9];
+my $dump_mtime = (stat($OSN_FILE))[9];
+my $last_modified = strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime($db_mtime));  # RFC 2822-compatible last-modified timestamp
+
 my $q=CGI->new;
-print $q->header (-charset=>'utf-8');
+print $q->header (  -charset=>'utf-8',
+                    -expires => '+600s',
+                    -Last-Modified => $last_modified,
+                 );
 
 my @users = defined (&CGI::multi_param) ? $q->multi_param('s') : $q->param('s');
 my $ignoreold = $q->param('ignoreold') || 0;
@@ -37,8 +45,6 @@ if ($skip_surveyme =~ /^(0|1|on)$/i) { $skip_surveyme = $1 } else { die "skip_su
 my $skip_notcreator = $q->param('skip_notcreator') || 0;
 if ($skip_notcreator =~ /^(0|1|on)$/i) { $skip_notcreator = $1 } else { die "skip_notcreator must be a number"; }
 
-my $db_mtime = (stat($DB_USERS_FILE))[9];
-my $dump_mtime = (stat($OSN_FILE))[9];
 
 
 # case insensitive compare of hash keys
