@@ -8,7 +8,7 @@ use autodie;
 use feature 'say';
 
 use Encode;
-use CGI qw(-utf8);
+use CGI qw(-utf8 escapeHTML);
 use CGI::Carp;
 use URI::Escape;
 use DB_File;
@@ -17,6 +17,8 @@ use List::MoreUtils qw(uniq);
 use Time::Piece;
 
 $ENV{'PATH'} = '/usr/bin:/bin';
+delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
+
 my $OSN_FILE = 'OK.planet-notes-latest.osn.bz2';
 my $DB_NOTES_FILE = 'notes-txt.db';		# Note: same as in myosmnotes_parser.pl
 my $DB_USERS_FILE = 'users.db';			# Note: same as in myosmnotes_parser.pl
@@ -67,14 +69,14 @@ foreach my $org_key (@users) {
 
     #my $upg_org_key = $org_key; utf8::upgrade($org_key);
     #my $upg_key = $org_key; utf8::upgrade($org_key);
-    #say "seeking for: $user: org=$org_key (upg=\L$upg_org_key), current=$found_key (upg=\L$upg_key), value=$value";
+    #say "DEBUG unsafe: seeking for: $user: org=$org_key (upg=\L$upg_org_key), current=$found_key (upg=\L$upg_key), value=$value";
 
-    #say "seeking: org=$org_key (lc=\L$org_key), current=$found_key (lc=\L$found_key), value=$value";
+    #say "DEBUG unsafe: seeking: org=$org_key (lc=\L$org_key), current=$found_key (lc=\L$found_key), value=$value";
 
     if ( ($found_key ne $org_key) and (lc $found_key ne lc $org_key) ) { $value = ''; $found_key = $org_key; }		# note however, $DB_user->seq() will return partial matches too, which we don't want, so make sure we only match keys whose only difference is case
     my @user_notes = split ' ', $value;
     push @all_notes, @user_notes;
-    say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape(encode('UTF-8', $found_key)) . '/notes">' . $found_key . '</A>(' . (scalar @user_notes) . ') ';
+    say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape(encode('UTF-8', $found_key)) . '/notes">' . escapeHTML($found_key) . '</A>(' . (scalar @user_notes) . ') ';
 }
 
 if (@all_notes) {
@@ -87,7 +89,7 @@ if (@all_notes) {
       $note_time =~ s/T/ /; $note_time =~ s/Z/ GMT/;
       my $days_old = int ((gmtime() - Time::Piece->strptime($note_time, '%Y-%m-%d %H:%M:%S %Z'))/86400);
       if ($days_old < $ignoreold or !$ignoreold) {
-          say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . $n . '">' . $n . '</A></td><td>' . $note_time . '</td><td>' . $note_text . '</td></tr>';
+          say '<tr><td><A HREF="http://www.openstreetmap.org/note/' . uri_escape($n) . '">' . escapeHTML($n) . '</A></td><td>' . escapeHTML($note_time) . '</td><td>' . escapeHTML($note_text) . '</td></tr>';
       }
     }
     say '</tbody></table>';
