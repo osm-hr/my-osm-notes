@@ -43,7 +43,7 @@ $HTTP_COMMON_HEADERS{'-Referrer-Policy'} = q{origin-when-cross-origin, strict-or
 $HTTP_COMMON_HEADERS{'-X-Content-Type-Options'} =  q{nosniff};
 $HTTP_COMMON_HEADERS{'-X-Xss-Protection'} = q{1; mode=block};
 $HTTP_COMMON_HEADERS{'-X-Frame-Options'} = q{DENY};
-$HTTP_COMMON_HEADERS{'-Feature-Policy'} = q{camera 'none'; microphone 'none'; accelerometer 'none'; ambient-light-sensor 'none'; gyroscope 'none'; payment 'none'; encrypted-media 'none'; autoplay 'none'; usb 'none'; };
+$HTTP_COMMON_HEADERS{'-Feature-Policy'} = q{camera 'none'; microphone 'none'; accelerometer 'none'; gyroscope 'none'; payment 'none'; encrypted-media 'none'; autoplay 'none'; usb 'none'; };
 $HTTP_COMMON_HEADERS{'-Content-Security-Policy'} = q{default-src 'none'; img-src 'none'; script-src 'none'; style-src 'self';};
 
 
