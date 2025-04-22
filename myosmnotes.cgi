@@ -57,7 +57,7 @@ $HTTP_COMMON_HEADERS{'-Content-Security-Policy'}  = q{default-src 'none'; };    
 $HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{img-src 'self'; };
 $HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{script-src 'none'; };
 #$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{style-src 'self'; };     # It's safer to use SHA256-below instead
-$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{style-src 'sha256-9f370634d9d8298786e1c84c132271c1d6a7b54c4195a06e998facc10b8d0b87'; };
+$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{style-src myosmnotes.css 'sha256-nzcGNNnYKYeG4chMEyJxwdantUxBlaBumY+swQuNC4c='; };
 
 
 # avoid re-requesting data from server if we know database hasn't been modified yet
