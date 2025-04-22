@@ -102,6 +102,7 @@ foreach my $org_key (@users) {
     my $found_key = $org_key;
     #my $value = $USER{$found_key};
     my $value = ''; $DB_user->seq($found_key, $value, R_CURSOR );	# this will actually update $found_key to what is in the database, not what was provided (which could be in different case, since we're case insensitive due to db_compare() override! )
+    next if !$org_key;  # skip empty fields if added by JS
 
     #my $upg_org_key = $org_key; utf8::upgrade($org_key);
     #my $upg_key = $org_key; utf8::upgrade($org_key);
