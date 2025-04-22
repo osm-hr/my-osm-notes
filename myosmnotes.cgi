@@ -32,7 +32,20 @@ my $dump_mtime = (stat($OSN_FILE))[9];
 my $last_modified = strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime($db_mtime));  # RFC 2822-compatible last-modified timestamp
 
 my $q=CGI->new;
-my %HTTP_COMMON_HEADERS = ( -charset => 'utf-8', -expires => '+600s' );
+my %HTTP_COMMON_HEADERS = (
+       -charset => 'utf-8',
+       -expires => '+600s',
+);
+
+# adds some some security HTTP headers
+$HTTP_COMMON_HEADERS{'-Strict-Transport-Security'} = q{max-age=15768000} if defined $ENV{'HTTPS'} and $ENV{'HTTPS'};  # enable HSTS if https:// is active
+$HTTP_COMMON_HEADERS{'-Referrer-Policy'} = q{origin-when-cross-origin, strict-origin-when-cross-origin};
+$HTTP_COMMON_HEADERS{'-X-Content-Type-Options'} =  q{nosniff};
+$HTTP_COMMON_HEADERS{'-X-Xss-Protection'} = q{1; mode=block};
+$HTTP_COMMON_HEADERS{'-X-Frame-Options'} = q{DENY};
+$HTTP_COMMON_HEADERS{'-Feature-Policy'} = q{camera 'none'; microphone 'none'; accelerometer 'none'; ambient-light-sensor 'none'; gyroscope 'none'; payment 'none'; encrypted-media 'none'; autoplay 'none'; usb 'none'; };
+$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} = q{default-src 'none'; script-src 'none'; };
+
 
 # avoid re-requesting data from server if we know database hasn't been modified yet
 my $if_modified_since = $q->http('If-Modified-Since');
