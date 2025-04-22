@@ -76,7 +76,7 @@ foreach my $org_key (@users) {
     if ( ($found_key ne $org_key) and (lc $found_key ne lc $org_key) ) { $value = ''; $found_key = $org_key; }		# note however, $DB_user->seq() will return partial matches too, which we don't want, so make sure we only match keys whose only difference is case
     my @user_notes = split ' ', $value;
     push @all_notes, @user_notes;
-    say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape(encode('UTF-8', $found_key)) . '/notes">' . escapeHTML($found_key) . '</A>(' . (scalar @user_notes) . ') ';
+    say '<A HREF="http://www.openstreetmap.org/user/' . uri_escape(encode('UTF-8', $found_key)) . '/notes">' . escapeHTML($found_key) . '</A>(' . escapeHTML(scalar @user_notes) . ') ';
 }
 
 if (@all_notes) {
@@ -97,8 +97,8 @@ if (@all_notes) {
     say '<br>No open notes found.';
 }
 
-say '<p>Database was last updated: ' . localtime($db_mtime);
-say '<br>Last <A HREF="http://planet.osm.org/notes/">OSM Notes planet dump</A> timestamp was: ' . localtime($dump_mtime);
+say '<p>Database was last updated: ' . escapeHTML(localtime($db_mtime));
+say '<br>Last <A HREF="http://planet.osm.org/notes/">OSM Notes planet dump</A> timestamp was: ' . escapeHTML(localtime($dump_mtime));
 say '</body></html>';
 
 exit 0;
