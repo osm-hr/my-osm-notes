@@ -23,5 +23,3 @@ Our <A HREF="http://my-notes.osm-hr.org/">developer instance</A> is currently of
 Installing:
 make sure you install libxml-sax-expatxs-perl package - pureperl is going to try to load everything in memory first
 and be extremly slow and resource hungry!
-
-If you will change .js or .css, remember to also update Content-Security-Policy SHA256 everywhere (or set it to 'self')

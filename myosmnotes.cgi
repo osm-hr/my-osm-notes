@@ -56,8 +56,7 @@ $HTTP_COMMON_HEADERS{'-Feature-Policy'} = q{camera 'none'; microphone 'none'; ac
 $HTTP_COMMON_HEADERS{'-Content-Security-Policy'}  = q{default-src 'none'; };    # sane CSP default, do not change!
 $HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{img-src 'self'; };
 $HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{script-src 'none'; };
-#$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{style-src 'self'; };     # It's safer to use SHA256-below instead
-$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{style-src myosmnotes.css 'sha256-nzcGNNnYKYeG4chMEyJxwdantUxBlaBumY+swQuNC4c='; };
+$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{style-src 'self'; };
 
 
 # avoid re-requesting data from server if we know database hasn't been modified yet
