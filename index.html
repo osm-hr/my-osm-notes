@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>My OpenStreetMap Notes</title>
-<script language="Javascript">
-var counter = 1;
-function addUser() {
-          var newUser = document.createElement('div');
-          newUser.innerHTML = "Username" + ++counter + ": <input name=s type=text><br>";
-          document.getElementById('moreUsers').appendChild(newUser);
-}
-</script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'none'; script-src 'self'; style-src 'self';">
+  <meta charset="UTF-8">
+  <title>My OpenStreetMap Notes</title>
+  <link href="myosmnotes.css" rel="stylesheet" type="text/css" media="screen">
+  <script defer type="text/javascript" src="myosmnotes.js">
 </head>
 
 <body>

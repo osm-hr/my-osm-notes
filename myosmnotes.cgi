@@ -44,9 +44,7 @@ $HTTP_COMMON_HEADERS{'-X-Content-Type-Options'} =  q{nosniff};
 $HTTP_COMMON_HEADERS{'-X-Xss-Protection'} = q{1; mode=block};
 $HTTP_COMMON_HEADERS{'-X-Frame-Options'} = q{DENY};
 $HTTP_COMMON_HEADERS{'-Feature-Policy'} = q{camera 'none'; microphone 'none'; accelerometer 'none'; ambient-light-sensor 'none'; gyroscope 'none'; payment 'none'; encrypted-media 'none'; autoplay 'none'; usb 'none'; };
-#my $CSP_STYLE=q{'none'};
-my $CSP_STYLE=q{'unsafe-inline'};
-$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} = q{default-src 'none'; script-src 'none'; style-src-attr 'none'; style-src-elem 'none'; style-src } . $CSP_STYLE . ';';
+$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} = q{default-src 'none'; img-src 'none'; script-src 'none'; style-src 'self';};
 
 
 # avoid re-requesting data from server if we know database hasn't been modified yet
@@ -82,10 +80,7 @@ my $DB_note = tie my %NOTE, "DB_File", "$DB_NOTES_FILE", O_RDONLY or die "no DB 
 $DB_note->Filter_Value_Push('utf8');
 
 say '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>My OpenStreetMap Notes - results</title>';
-say '<style>';
-say 'table { background:#ddd; border-collapse: separate; box-shadow: 0.3rem 0.3rem 0.5rem rgba(0, 0, 0, 0.3); border: 1px solid #777; border-spacing: 8px;}';
-say 'th { color: #FFF; background-color: rgba(0, 0, 0, 0.3); text-shadow: 1px 1px 1px #111;';
-say '</style>';
+say '<META NAME="ROBOTS" CONTENT="NOFOLLOW"><link href="myosmnotes.css" rel="stylesheet" type="text/css" media="screen">';
 say '</head><body>';
 
 
