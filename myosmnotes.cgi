@@ -39,12 +39,21 @@ my %HTTP_COMMON_HEADERS = (
 
 # adds some some security HTTP headers
 $HTTP_COMMON_HEADERS{'-Strict-Transport-Security'} = q{max-age=15768000} if defined $ENV{'HTTPS'} and $ENV{'HTTPS'};  # enable HSTS if https:// is active
+
+$HTTP_COMMON_HEADERS{'-Access_Control_Allow_Methods'} = q{GET, POST, HEAD};
+my $allowed_origin = $q->http('Origin');    # allow only same domain access
+$HTTP_COMMON_HEADERS{'-Access_Control_Allow_Origin'} = $allowed_origin if defined $allowed_origin;
+
 $HTTP_COMMON_HEADERS{'-Referrer-Policy'} = q{origin-when-cross-origin, strict-origin-when-cross-origin};
 $HTTP_COMMON_HEADERS{'-X-Content-Type-Options'} =  q{nosniff};
 $HTTP_COMMON_HEADERS{'-X-Xss-Protection'} = q{1; mode=block};
 $HTTP_COMMON_HEADERS{'-X-Frame-Options'} = q{DENY};
 $HTTP_COMMON_HEADERS{'-Feature-Policy'} = q{camera 'none'; microphone 'none'; accelerometer 'none'; gyroscope 'none'; payment 'none'; encrypted-media 'none'; autoplay 'none'; usb 'none'; };
-$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} = q{default-src 'none'; img-src 'self'; script-src 'none'; style-src 'self';};
+
+$HTTP_COMMON_HEADERS{'-Content-Security-Policy'}  = q{default-src 'none'; };    # sane CSP default, do not change!
+$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{img-src 'self'; };
+$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{script-src 'none'; };
+$HTTP_COMMON_HEADERS{'-Content-Security-Policy'} .= q{style-src 'self'; };
 
 
 # avoid re-requesting data from server if we know database hasn't been modified yet
