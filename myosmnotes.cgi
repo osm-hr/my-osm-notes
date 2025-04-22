@@ -32,10 +32,16 @@ my $dump_mtime = (stat($OSN_FILE))[9];
 my $last_modified = strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime($db_mtime));  # RFC 2822-compatible last-modified timestamp
 
 my $q=CGI->new;
-print $q->header (  -charset=>'utf-8',
-                    -expires => '+600s',
-                    -Last-Modified => $last_modified,
-                 );
+my %HTTP_COMMON_HEADERS = ( -charset => 'utf-8', -expires => '+600s' );
+
+# avoid re-requesting data from server if we know database hasn't been modified yet
+my $if_modified_since = $q->http('If-Modified-Since');
+if (defined $if_modified_since && $if_modified_since eq $last_modified) {   # NB: we should be smarter and actually compare which one is newer (as it *might* be returned in different TZ), but this should be good enough for majority of the cases
+    print $q->header(-status  => '304 Not Modified', %HTTP_COMMON_HEADERS);
+    exit;
+}
+
+print $q->header (%HTTP_COMMON_HEADERS, '-Last-Modified' => $last_modified);
 
 my @users = defined (&CGI::multi_param) ? $q->multi_param('s') : $q->param('s');
 my $ignoreold = $q->param('ignoreold') || 0;
