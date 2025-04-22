@@ -14,6 +14,8 @@ use DBM_Filter;
 use XML::SAX;
 
 $ENV{'PATH'} = '/usr/bin:/bin';
+delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
+
 my $OSN_FILE = 'OK.planet-notes-latest.osn.bz2';
 my $DB_NOTES_FILE_FINAL = 'notes-txt.db';		# contains note_id(s) and first comment (Note description)
 my $DB_USERS_FILE_FINAL = 'users.db';			# contains user_id(s) and list of all notes he took part in
