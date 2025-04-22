@@ -103,8 +103,8 @@ if (@all_notes) {
     say '<br>No open notes found.';
 }
 
-say '<p>Database was last updated: ' . escapeHTML(localtime($db_mtime));
-say '<br>Last <A HREF="http://planet.osm.org/notes/">OSM Notes planet dump</A> timestamp was: ' . escapeHTML(localtime($dump_mtime));
+say '<p>Database was last updated: ' . escapeHTML(localtime($db_mtime)."");
+say '<br>Last <A HREF="http://planet.osm.org/notes/">OSM Notes planet dump</A> timestamp was: ' . escapeHTML(localtime($dump_mtime)."");
 say '</body></html>';
 
 exit 0;
