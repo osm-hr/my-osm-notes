@@ -1,7 +1,15 @@
-var counter = 1;
-function addUser() {
+function autoLoad() {
      'use strict';
-     var newUser = document.createElement('div');
-     newUser.innerHTML = "Username" + ++counter + ": <input name=s type=text><br>";
-     document.getElementById('moreUsers').appendChild(newUser);
+
+     var counter = 1;
+
+     function addUser() {
+          var newUser = document.createElement('div');
+          newUser.innerHTML = "Username" + ++counter + ": <input name=s type=text><br>";
+          document.getElementById('moreUsers').appendChild(newUser);
+     }
+
+     document.getElementById('adduser').onclick = addUser;
 }
+
+autoLoad();
